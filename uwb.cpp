@@ -3,22 +3,8 @@
 #include <iostream>
 #include"config.h"
 #include "Cn2b.h"
-using namespace std;
-#define IMU_LENGTH 82040//imu文件行数
-#define UWB_LENGTH 1466//uwb文件行数
-#pragma warning(disable : 4996)
+#include "find_matched_ins.h"
 
-
-#define g0 9.7803267714      //重力加速度
-#define pi 3.1415926535897931
-#define r0 6378137           //地球长半轴
-#define WIE 7.2921151647e-5  //地球自转角速度
-#define GM 3.986005e+14      //地球万有引力与地球质量乘积
-#define eeee 0.00669438000426//偏心率
-#define f (1 / 298.257)      //扁率
-#define T 0.005              //IMU频率
-#define T_UWB 0.25           //UWB频率
-#define Anchor_num 4
 
 double  d2r = pi / 180, r2d = 180 / pi;
 double dh2rs = d2r / 3600;
@@ -28,6 +14,7 @@ double llh0[3] = { 39.95052634181 * d2r,116.330874837810 * d2r,45.6151000000000 
 double Lati0 = llh0[0];
 double Longi0 = llh0[1];
 double Alti0 = llh0[2];
+
 
 int main()
 {
