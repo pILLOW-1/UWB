@@ -201,17 +201,17 @@ int main()
     double G[D_X][6];
     for (int i = 0; i < D_X; i++)
         for (int j = 0; j < 6; j++)
-            discreteF[i][j] = 0;
+            G[i][j] = 0;
 
     double F[D_X][D_X];
     for (int i = 0; i < D_X; i++)
         for (int j = 0; j < D_X; j++)
-            discreteF[i][j] = 0;
+            F[i][j] = 0;
 
     double H[D_M][D_X];
     for (int i = 0; i < D_M; i++)
         for (int j = 0; j < D_X; j++)
-            discreteF[i][j] = 0;
+            H[i][j] = 0;
 
     double Xfilter[D_X];
     for (int i = 0; i < D_X; i++)
