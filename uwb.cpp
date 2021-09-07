@@ -208,7 +208,7 @@ int main()
         for (int j = 0; j < D_X; j++)
             discreteF[i][j] = 0;
 
-    double H[D_X][D_X];
+    double H[D_M][D_X];
     for (int i = 0; i < D_M; i++)
         for (int j = 0; j < D_X; j++)
             discreteF[i][j] = 0;
