@@ -250,7 +250,7 @@ int main()
     double ang_1[3], vel_1[3], ang_2[3], vel_2[3];
     for (int i = 0; i < IMU_LENGTH; i++)
     {
-        if (i % 2 == 0)
+        if (i % 2 != 0)
         {
             //_PartAssign(Deltaang, i, i, 0, 2, ang_1);
             //_PartAssign(Deltavel, i, i, 0, 2, vel_1);
