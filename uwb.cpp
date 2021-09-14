@@ -263,7 +263,7 @@ int main()
         else {
             //_PartAssign(Deltaang, i, i, 0, 2, ang_2);
            // _PartAssign(Deltavel, i, i, 0, 2, vel_2);
-            for (int j = 0; j < 2; j++)
+            for (int j = 0; j < 3; j++)
             {
                 ang_2[j] = Deltaang.base[i][j];
                 vel_2[j] = Deltavel.base[i][j];
