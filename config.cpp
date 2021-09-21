@@ -2,28 +2,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void zeros(Matrix& m, int row, int col);//´´½¨È«Áã¾ØÕó
 
-void CreateMatrix(Matrix& m)//´´½¨¾ØÕó
+void zeros(Matrix& m, int row, int col);//åˆ›å»ºå…¨é›¶çŸ©é˜µ
+
+void CreateMatrix(Matrix& m)//åˆ›å»ºçŸ©é˜µ
 {
-	
-		m.base = (double**)malloc(sizeof(double*) * m.row);
-		if (!m.base)
+
+	m.base = (double**)malloc(sizeof(double*) * m.row);
+	if (!m.base)
+	{
+		printf("CreateMatrix failed!");
+		exit(1);
+	}
+	for (int i = 0; i < m.row; i++)
+	{
+		m.base[i] = (double*)malloc(sizeof(double) * m.col);
+		if (!m.base[i])
 		{
 			printf("CreateMatrix failed!");
 			exit(1);
 		}
-		for (int i = 0; i < m.row; i++)
-		{
-			m.base[i] = (double*)malloc(sizeof(double) * m.col);
-			if (!m.base[i])
-			{
-				printf("CreateMatrix failed!");
-				exit(1);
-			}
-		}
+	}
 
-	
+
 }
 
 void CreateMatrix(double** m, int col, int row)
@@ -45,7 +46,7 @@ void CreateMatrix(double** m, int col, int row)
 	}
 }
 
-void DestroyMatrix(Matrix& m)//Ïú»Ù¾ØÕó
+void DestroyMatrix(Matrix& m)//é”€æ¯çŸ©é˜µ
 {
 	for (int i = 0; i < m.row; i++)
 		free(m.base[i]);
@@ -62,7 +63,7 @@ void DestroyMatrix(double** m, int col, int row)
 
 
 
-void cross(double m[3], double t[3],double res[3])
+void cross(double m[3], double t[3], double res[3])
 {
 	res[0] = m[1] * t[2] - m[2] * t[1];
 	res[1] = m[0] * t[2] - m[2] * t[0];
@@ -71,7 +72,7 @@ void cross(double m[3], double t[3],double res[3])
 
 
 
-void CopyMatrix(Matrix s, Matrix& t)//¸´ÖÆ¾ØÕó
+void CopyMatrix(Matrix s, Matrix& t)//å¤åˆ¶çŸ©é˜µ
 {
 	if (s.base)
 	{
@@ -91,11 +92,60 @@ void CopyMatrix(Matrix s, Matrix& t)//¸´ÖÆ¾ØÕó
 }
 
 
-double norm(double Q[], int n)//ÇóÏòÁ¿·¶Êý
+double norm(double Q[], int n)//æ±‚å‘é‡èŒƒæ•°
 {
-	double sum=0.0,norm;
+	double sum = 0.0, norm;
 	for (int i = 0; i < n; i++)
 		sum += Q[i] * Q[i];
 	norm = sqrt(sum);
 	return norm;
+}
+
+
+/*
+void MultiplyMatrix(Matrix a, Matrix b, Matrix& c)
+{
+	
+	for (int i = 0; i < a.row; i++)
+	{
+		for (int j = 0; j < b.col; j++)
+		{
+			double sum = 0.0;
+			for (int k = 0; k < a.col; k++)
+			{
+				sum += a.base[i][k] * b.base[k][j];
+			}
+			c.base[i][j] = sum;
+		}
+	}
+}
+*/
+
+void MultiplyMatrix(double a[D_X][D_X], double b[D_X][D_X], double c[D_X][D_X])
+{
+	for (int i = 0; i < D_X; i++)
+	{
+		for (int j = 0; j < D_X; j++)
+		{
+			double sum = 0.0;
+			for (int k = 0; k < D_X; k++)
+			{
+				sum += a[i][k] * b[k][j];
+			}
+			c[i][j] = sum;
+		}
+	}
+}
+
+
+void TransposeMatrix(double a[D_X][D_X], double b[D_X][D_X])
+{
+	for (int i = 0; i < D_X; i++)
+	{
+		for (int j = 0; j < D_X; j++)
+		{
+			b[j][i] = a[i][j];
+		}
+
+	}
 }
