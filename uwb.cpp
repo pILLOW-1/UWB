@@ -195,8 +195,19 @@ int main()
     */
     double discreteF[D_X][D_X];
     for (int i = 0; i < D_X; i++)
+    {
         for (int j = 0; j < D_X; j++)
-            discreteF[i][j] = 1;
+        {
+            if (i == j)
+            {
+                discreteF[i][j] = 1;
+            }
+            else
+            {
+                discreteF[i][j] = 0;
+            }
+        }
+    }
 
     double G[D_X][6];
     for (int i = 0; i < D_X; i++)
