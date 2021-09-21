@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <math.h>
 #include <iostream>
 #include"config.h"
@@ -8,8 +8,8 @@
 
 double  d2r = pi / 180, r2d = 180 / pi;
 double dh2rs = d2r / 3600;
-double acc_sf = 0.05 * pow(2 ,-15);//加速度比例因子
-double gyr_sf = 0.1 * pow(2 , -8);//角速度比例因子
+double acc_sf = 0.05 * pow(2, -15);//加速度比例因子
+double gyr_sf = 0.1 * pow(2, -8);//角速度比例因子
 double llh0[3] = { 39.95052634181 * d2r,116.330874837810 * d2r,45.6151000000000 };//纬度经度高程
 double Lati0 = llh0[0];
 double Longi0 = llh0[1];
@@ -20,11 +20,11 @@ int main()
 {
     //---------------Initialize--------------------
     //-------1.imu、uwb初始化------------------
-    
-    FILE* RAWIMU_IN = NULL,*UWB = NULL;//imu原始数据
+
+    FILE* RAWIMU_IN = NULL, * UWB = NULL;//imu原始数据
     Matrix IMU_info, INS_Time, Deltavel, Deltaang, UWB_info, UWB_Time, UWB_d;
-           //Pfilter, Qkf, G, F, H, R, Xfilter, discreteF,
-           //angle,velocity, err_gyr, err_acc, temp_err_gyr, temp_err_acc;
+    //Pfilter, Qkf, G, F, H, R, Xfilter, discreteF,
+    //angle,velocity, err_gyr, err_acc, temp_err_gyr, temp_err_acc;
     double a0[3] = { 0,0,3.87 }, a1[3] = { -0.305, 32.732,3.610 }, a2[3] = { 6.956,32.732,4.158 }, a3[3] = { 6.977,0, 3.621 };//基站坐标
     double Pos[3];//位置
     double Vx, Vy, Vz;//速度
@@ -32,7 +32,7 @@ int main()
     double pitch = 0.437961887 * d2r;//俯仰角
     double yaw = (257.540582621) * d2r;//偏航角
     int UWB_num = 2;//做判断
-    
+
 
     IMU_info.base = NULL;
     IMU_info.row = IMU_LENGTH;
@@ -55,8 +55,8 @@ int main()
     UWB_d.base = NULL;
     UWB_d.row = UWB_LENGTH;
     UWB_d.col = 4;
-    
-    
+
+
 
     CreateMatrix(IMU_info);
     CreateMatrix(INS_Time);
@@ -65,7 +65,7 @@ int main()
     CreateMatrix(UWB_info);
     CreateMatrix(UWB_Time);
     CreateMatrix(UWB_d);
-    
+
 
     RAWIMU_IN = fopen("imu.txt", "r");//imu文件
     UWB = fopen("uwb.txt", "r");      //uwb文件
@@ -77,7 +77,7 @@ int main()
         {
             fscanf(RAWIMU_IN, "%lf", &IMU_info.base[i][j]);
         }
-        fseek(RAWIMU_IN, sizeof(int)+sizeof("\n"), SEEK_CUR);//每一行后有一个回车，占2个字节，加上第一列的4个字节，共6个字节
+        fseek(RAWIMU_IN, sizeof(int) + sizeof("\n"), SEEK_CUR);//每一行后有一个回车，占2个字节，加上第一列的4个字节，共6个字节
     }
     fclose(RAWIMU_IN);
     //-------imu文件读取结束-----------------
@@ -106,10 +106,10 @@ int main()
     for (int i = 0; i < UWB_LENGTH; i++)
     {
         UWB_Time.base[i][0] = UWB_info.base[i][0];
-        UWB_d.base[i][0] = UWB_info.base[i][1]/1000;
-        UWB_d.base[i][1] = UWB_info.base[i][2]/1000;
-        UWB_d.base[i][2] = UWB_info.base[i][3]/1000;
-        UWB_d.base[i][3] = UWB_info.base[i][4]/1000;
+        UWB_d.base[i][0] = UWB_info.base[i][1] / 1000;
+        UWB_d.base[i][1] = UWB_info.base[i][2] / 1000;
+        UWB_d.base[i][2] = UWB_info.base[i][3] / 1000;
+        UWB_d.base[i][3] = UWB_info.base[i][4] / 1000;
     }
 
     //基站坐标
@@ -126,8 +126,8 @@ int main()
     Anchor[3][0] = 6.977;
     Anchor[3][1] = 0.0;
     Anchor[3][2] = 3.621;
-    
-    
+
+
     //---------姿态初始化---------
     double Cnb[3][3], Q[4];
     Cn2b(yaw, pitch, roll, Cnb, Q);
@@ -162,7 +162,7 @@ int main()
     double Pdiag[D_X] = { std_roll * std_roll,std_pitch * std_pitch, std_yaw * std_yaw ,std_pos[0] * std_pos[0],
                          std_pos[1] * std_pos[1],std_pos[2] * std_pos[2],std_vel[0] * std_vel[0], std_vel[1] * std_vel[1] ,
                          std_vel[2] * std_vel[2] ,std_gyro * std_gyro ,std_gyro * std_gyro ,std_gyro * std_gyro ,
-                         std_acc* std_acc ,std_acc * std_acc ,std_acc * std_acc };
+                         std_acc * std_acc ,std_acc * std_acc ,std_acc * std_acc };
     double Pfilter[D_X][D_X];
     for (int i = 0; i < D_X; i++)
         Pfilter[i][i] = Pdiag[i];
@@ -208,6 +208,7 @@ int main()
             }
         }
     }
+        
 
     double G[D_X][6];
     for (int i = 0; i < D_X; i++)
@@ -226,11 +227,11 @@ int main()
 
     double Xfilter[D_X];
     for (int i = 0; i < D_X; i++)
-         Xfilter[i] = 0;
+        Xfilter[i] = 0;
 
     double angle[3];
     for (int i = 0; i < 3; i++)
-         angle[i] = 0;
+        angle[i] = 0;
 
     double velocity[3];
     for (int i = 0; i < 3; i++)
@@ -293,7 +294,7 @@ int main()
 
             for (int i = 0; i < 3; i++)
                 vel_scull_b[i] = velocity[i] + 0.5 * tmp1[i] + 2.0 / 3.0 * (tmp2[i] + tmp3[i]);
-           
+
             double wien[3], wenn[3], winn[3], winb[3], g_local[3];
             double temp = 1 - eeee * sin(Lati0) * sin(Lati0);
             double rn = r0 * (1 - eeee) / pow(temp, 1.5) + Alti0;
@@ -394,6 +395,387 @@ int main()
             //----------------imu_update结束-------------------------------------------
 
             //----------------KF开始---------------------------------------------------
+            double fned[3];
+            for (int i = 0; i < 3; i++)
+            {
+                double sum = 0.0;
+                for (int j = 0; j < 3; j++)
+                    sum += Cbn[i][j] * velocity[j];
+                fned[i] = sum / (2 * T);
+            }
+
+            F[0][0] = 0;
+            F[0][1] = -WIE * sin(Lati0);
+            F[0][2] = 0;
+
+            F[1][0] = 0;
+            F[1][1] = 0;
+            F[1][2] = WIE * cos(Lati0);
+
+            F[2][0] = 0;
+            F[2][1] = -WIE * cos(Lati0);
+            F[2][2] = 0;
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 9; j < 12; j++)
+                {
+                    F[i][j] = -Cbn[i][j - 9];
+                }
+            }
+            
+            F[3][6] = 1;
+            F[3][7] = 0;
+            F[3][8] = 0;
+
+            F[4][6] = 0;
+            F[4][7] = 1;
+            F[4][8] = 0;
+
+            F[5][6] = 0;
+            F[5][7] = 0;
+            F[5][8] = -1;
+
+
+            F[6][0] = 0;
+            F[6][1] = -fned[2];
+            F[6][2] = fned[1];
+
+            F[7][0] = fned[2];
+            F[7][1] = 0;
+            F[7][2] = -fned[0];
+
+            F[8][0] = -fned[1];
+            F[8][1] = fned[0];
+            F[8][2] = 0;
+
+
+            F[6][6] = 0;
+            F[6][7] = -WIE * sin(Lati0);
+            F[6][8] = 0;
+
+            F[7][6] = 2 * WIE * sin(Lati0);
+            F[7][7] = 0;
+            F[7][8] = 2 * WIE * cos(Lati0);
+
+            F[8][6] = 0;
+            F[8][7] = -2 * WIE * cos(Lati0);
+            F[8][8] = 0;
+
+
+            for (int i = 6; i < 9; i++)
+            {
+                for (int j = 12; j < 15; j++)
+                {
+                    F[i][j] = Cbn[i - 6][j - 12];
+                }
+            }
+
+            //离散矩阵
+
+            double phi_5_1[D_X][D_X];
+            double matrix_multiple[D_X][D_X]; //存放中间结果
+            
+            MultiplyMatrix(F, F, matrix_multiple);
+
+            for (int i = 0; i < D_X; i++)
+            {
+                for (int j = 0; j < D_X; j++)
+                {
+                    matrix_multiple[i][j] = matrix_multiple[i][j] * 0.5 * 4 * T * T;
+                }
+            }
+
+
+            for (int i = 0; i < D_X; i++)
+            {
+                for (int j = 0; j < D_X; j++)
+                {
+                    phi_5_1[i][j] = discreteF[i][j] + F[i][j] * 2 * T + matrix_multiple[i][j];
+                }
+            }
+
+            MultiplyMatrix(phi_5_1, discreteF, discreteF);
+
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    G[i][j] = -Cbn[i][j];
+                }
+            }
+
+            for (int i = 6; i < 9; i++)
+            {
+                for (int j = 3; j < 6; j++)
+                {
+                    G[i][j] = Cbn[i - 6][j - 3];
+                }
+            }
+
+
+            int maxlen;
+            int index_UWB;
+            if (UWB_Time.row > UWB_Time.col)
+            {
+                maxlen = UWB_Time.row;
+            }
+            else
+            {
+                maxlen = UWB_Time.col;
+            }
+
+            if (UWB_num < maxlen)
+            {
+                index_UWB = find_matched_ins(INS_Time, UWB_Time.base[UWB_num][0]);
+                
+            }
+
+            int UWB_feedback;
+            UWB_feedback = 1;
+
+            
+            if (i == index_UWB && UWB_feedback == 1)
+            {
+                printf("%d\n", index_UWB);
+                printf("%d\n", UWB_num);
+
+                double transG[D_X][6];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < 6; j++)
+                    {
+                        transG[j][i] = G[i][j];
+                    }
+                }
+
+                double mid[D_X][6];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < 6; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < 6; k++)
+                        {
+                            sum += G[i][k] * Qkf[k][j];
+                        }
+                        mid[i][j] = sum;
+                    }
+                }
+
+                double M1[D_X][D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < 6; k++)
+                        {
+                            sum += mid[i][k] * transG[k][j];
+                        }
+                        M1[i][j] = sum;
+                    }
+                }
+
+                double M2[D_X][D_X], M3[D_X][D_X], M4[D_X][D_X],
+                    M5[D_X][D_X], M6[D_X][D_X], M7[D_X][D_X], M8[D_X][D_X], M9[D_X][D_X], M10[D_X][D_X];
+                double mid1[D_X][D_X], mid2[D_X][D_X];  //存放中间结果
+                double transF[D_X][D_X];
+                double transMs[D_X][D_X];  //存放M1-M9的转置结果
+                MultiplyMatrix(F, M1, mid1);
+                TransposeMatrix(F, transF);
+                TransposeMatrix(M1, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M2[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M2, mid1);
+                TransposeMatrix(M2, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M3[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M3, mid1);
+                TransposeMatrix(M3, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M4[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M4, mid1);
+                TransposeMatrix(M4, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M5[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M5, mid1);
+                TransposeMatrix(M5, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M6[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M6, mid1);
+                TransposeMatrix(M6, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M7[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M7, mid1);
+                TransposeMatrix(M7, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M8[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M8, mid1);
+                TransposeMatrix(M8, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M9[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+                MultiplyMatrix(F, M9, mid1);
+                TransposeMatrix(M9, transMs);
+                MultiplyMatrix(transMs, transF, mid2);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        M10[i][j] = mid1[i][j] + mid2[i][j];
+                    }
+                }
+
+
+                double discreteQ[D_X][D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        discreteQ[i][j] = M1[i][j] * kfT + M2[i][j] * pow(kfT, 2) / 2 + M3[i][j] * pow(kfT, 3) / 6 + M4[i][j] * pow(kfT, 4) / 24 + M5[i][j] * pow(kfT, 5) / 120 + M6[i][j] * pow(kfT, 6) / 720
+                            + M7[i][j] * pow(kfT, 7) / 5040 + M8[i][j] * pow(kfT, 8) / 40320 + M9[i][j] * pow(kfT, 9) / 362880 + M10[i][j] * pow(kfT, 10) / 3628800;
+                    }
+
+                }
+
+
+
+                double UWB_dis[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    UWB_dis[i] = UWB_d.base[UWB_num][i];
+                }
+
+                double INS_dis[4];
+                for (int k = 0; k < Anchor_num; k++)
+                {
+                    INS_dis[k] = pow(pow(Pos[0] - Anchor[k][0], 2) + pow(Pos[1] - Anchor[k][1], 2) + pow(Pos[2] - Anchor[k][2], 2), 0.5);
+                }
+
+
+                double Y[Anchor_num];
+                for (int i = 0; i < Anchor_num; i++)
+                {
+                    Y[i] = INS_dis[i] - UWB_dis[i];
+                }
+
+
+                double H[D_M][D_X];
+                for (int i = 0; i < D_M; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        H[i][j] = 0;
+                    }
+                }
+
+                for (int k = 0; k < Anchor_num; k++)
+                {
+                    for (int j = 3; j < 6; j++)
+                    {
+                        H[k][j] = (Pos[j - 3] - Anchor[k][j - 3]) / UWB_dis[k];
+                    }
+                }
+
+
+                double Xfilter[D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    Xfilter[i] = 0;
+                }
+                    
+                double Xexpect[D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    double sum = 0.0;
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        sum += discreteF[i][j] * Xfilter[j];
+                    }
+                    Xexpect[i] = sum;
+                }
+
+
+                double Pexpect[D_X][D_X];
+                double transdiscreteF[D_X][D_X];
+                double mid3[D_X][D_X];  //暂存中间结果
+                double mid4[D_X][D_X];  //暂存中间结果
+                TransposeMatrix(discreteF, transdiscreteF);
+                MultiplyMatrix(discreteF, Pfilter, mid3);
+                MultiplyMatrix(mid3, transdiscreteF, mid4);
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        Pexpect[i][j] = mid4[i][j] + discreteQ[i][j];
+                    }
+                }
+
+
+
+
+
+            }
+
+
+
 
             //----------------KF结束---------------------------------------------------
         }
@@ -409,4 +791,3 @@ int main()
 
     return 0;
 }
-
