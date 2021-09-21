@@ -1,43 +1,48 @@
 #pragma once
 #include <math.h>
-#define IMU_LENGTH 82040//imuÎÄ¼şĞĞÊı
-#define UWB_LENGTH 1466//uwbÎÄ¼şĞĞÊı
-#define g0 9.7803267714      //ÖØÁ¦¼ÓËÙ¶È
+#define IMU_LENGTH 82040//imuæ–‡ä»¶è¡Œæ•°
+#define UWB_LENGTH 1466//uwbæ–‡ä»¶è¡Œæ•°
+#define g0 9.7803267714      //é‡åŠ›åŠ é€Ÿåº¦
 #define pi 3.1415926535897931
-#define r0 6378137           //µØÇò³¤°ëÖá
-#define WIE 7.2921151647e-5  //µØÇò×Ô×ª½ÇËÙ¶È
-#define GM 3.986005e+14      //µØÇòÍòÓĞÒıÁ¦ÓëµØÇòÖÊÁ¿³Ë»ı
-#define eeee 0.00669438000426//Æ«ĞÄÂÊ
-#define ff (1 / 298.257)      //±âÂÊ,ÏµÍ³ÖĞÒÑÓĞf³£Á¿
-#define T 0.005              //IMUÆµÂÊ
-#define T_UWB 0.25           //UWBÆµÂÊ
+#define r0 6378137           //åœ°çƒé•¿åŠè½´
+#define WIE 7.2921151647e-5  //åœ°çƒè‡ªè½¬è§’é€Ÿåº¦
+#define GM 3.986005e+14      //åœ°çƒä¸‡æœ‰å¼•åŠ›ä¸åœ°çƒè´¨é‡ä¹˜ç§¯
+#define eeee 0.00669438000426//åå¿ƒç‡
+#define ff (1 / 298.257)      //æ‰ç‡,ç³»ç»Ÿä¸­å·²æœ‰få¸¸é‡
+#define T 0.005              //IMUé¢‘ç‡
+#define T_UWB 0.25           //UWBé¢‘ç‡
 #define Anchor_num 4
-#define D_X 15//×´Ì¬ÏòÁ¿´óĞ¡
-#define D_M 4//¹Û²âÏòÁ¿´óĞ¡
+#define D_X 15//çŠ¶æ€å‘é‡å¤§å°
+#define D_M 4//è§‚æµ‹å‘é‡å¤§å°
 
-extern double  d2r ;
+extern double  d2r;
 extern double dh2rs;
-extern double acc_sf ;//¼ÓËÙ¶È±ÈÀıÒò×Ó
-extern double gyr_sf ;//½ÇËÙ¶È±ÈÀıÒò×Ó
-extern double llh0[3] ;//Î³¶È¾­¶È¸ß³Ì
-extern double Lati0 ;
+extern double acc_sf;//åŠ é€Ÿåº¦æ¯”ä¾‹å› å­
+extern double gyr_sf;//è§’é€Ÿåº¦æ¯”ä¾‹å› å­
+extern double llh0[3];//çº¬åº¦ç»åº¦é«˜ç¨‹
+extern double Lati0;
 extern double Longi0;
-extern double Alti0 ;
+extern double Alti0;
 
 
 typedef struct matrix {
-	double** base;//Ê×µØÖ·
-	int row;      //ĞĞÊı
-	int col;      //ÁĞÊı
+	double** base;//é¦–åœ°å€
+	int row;      //è¡Œæ•°
+	int col;      //åˆ—æ•°
 }Matrix;
 
-void CreateMatrix(Matrix& m);//´´½¨¾ØÕó
+void CreateMatrix(Matrix& m);//åˆ›å»ºçŸ©é˜µ
 void CreateMatrix(double** m, int col, int row);
-void DestroyMatrix(Matrix& m);//Ïú»Ù¾ØÕó
+void DestroyMatrix(Matrix& m);//é”€æ¯çŸ©é˜µ
 void DestroyMatrix(double** m, int col, int row);
 
-void cross(double m[3], double t[3],double res[3]);
+void cross(double m[3], double t[3], double res[3]);
 
-void CopyMatrix(Matrix s, Matrix& t);//¸´ÖÆ¾ØÕó
+void CopyMatrix(Matrix s, Matrix& t);//å¤åˆ¶çŸ©é˜µ
 
-double norm(double Q[], int n);//ÇóÏòÁ¿·¶Êı
+double norm(double Q[], int n);//æ±‚å‘é‡èŒƒæ•°
+
+//void MultiplyMatrix(Matrix a, Matrix b, Matrix& c); //D_X*D_Xçš„çŸ©é˜µaå’ŒçŸ©é˜µbç›¸ä¹˜ï¼Œç»“æœå­˜ä¸çŸ©é˜µcä¸­
+void MultiplyMatrix(double a[D_X][D_X], double b[D_X][D_X], double c[D_X][D_X]);
+
+void TransposeMatrix(double a[D_X][D_X], double b[D_X][D_X]); //D_X*D_Xçš„çŸ©é˜µaè½¬ç½®ï¼Œç»“æœå­˜å…¥çŸ©é˜µb
