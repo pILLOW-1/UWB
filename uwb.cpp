@@ -259,6 +259,7 @@ int main()
     //--------------imu_update开始---------------------
     int count = 1;
     double ang_1[3], vel_1[3], ang_2[3], vel_2[3];
+    double ins_result[IMU_LENGTH][10];
     for (int i = 0; i < IMU_LENGTH; i++)
     {
         if (i % 2 != 0)
@@ -767,14 +768,333 @@ int main()
                     }
                 }
 
+                double mid5[D_X][D_M];
+                double mid6[D_M][D_X];
+                double mid7[D_M][D_M];
+                double transH[D_X][D_M];  
+                double inv[D_M][D_M];
+                double K[D_X][D_M];
+                for (int i = 0; i < D_M; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        transH[j][i] = H[i][j];
+                    }
+
+                }
+
+
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_M; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < D_X; k++)
+                        {
+                            sum += Pexpect[i][k] * transH[k][j];
+                        }
+                        mid5[i][j] = sum;
+                    }
+                }
 
 
 
+                for (int i = 0; i < D_M; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < D_X; k++)
+                        {
+                            sum += H[i][k] * Pexpect[k][j];
+                        }
+                        mid6[i][j] = sum;
+                    }
+                }
+
+                for (int i = 0; i < D_M; i++)
+                {
+                    for (int j = 0; j < D_M; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < D_X; k++)
+                        {
+                            sum += mid6[i][k] * transH[k][j];
+                        }
+                        mid7[i][j] = sum;
+                    }
+                }
+
+                for (int i = 0; i < D_M; i++)
+                {
+                    for (int j = 0; j < D_M; j++)
+                    {
+                        mid7[i][j] = mid7[i][j] + R[i][j];
+                    }
+                }
+
+                InverseMatrix(mid7, inv);
+
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_M; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < D_M; k++)
+                        {
+                            sum += mid5[i][k] * inv[k][j];
+                        }
+                        K[i][j] = sum;
+                    }
+                }
+
+                double mid8[D_M];
+                double mid9[D_X];
+
+                for (int i = 0; i < D_M; i++)
+                {
+                    double sum = 0.0;
+                    for (int k = 0; k < D_X; k++)
+                    {
+                        sum += H[i][k] * Xexpect[k];
+                    }
+                    mid8[i] = sum;                 
+                }
+
+                for (int i = 0; i < D_M; i++)
+                {
+                    mid8[i] = Y[i] - mid8[i];
+                }
+                
+                for (int i = 0; i < D_X; i++)
+                {
+                    double sum = 0.0;
+                    for (int k = 0; k < D_M; k++)
+                    {
+                        sum += K[i][k] * mid8[k];
+                    }
+                    mid9[i] = sum;
+                }
+
+                for (int i = 0; i < D_X; i++)
+                {
+                    Xfilter[i] = Xexpect[i] + mid9[i];
+                }
+
+                for (int i = 0; i < D_M; i++)
+                {
+                    printf("%lf ", mid8[i]);
+                }
+
+
+                double eye[D_X][D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        if (i == j)
+                        {
+                            eye[i][j] = 1;
+                        }
+                        else
+                        {
+                            eye[i][j] = 0;
+                        }
+                    }
+                }
+
+
+                double mid10[D_X][D_X];
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < D_M; k++)
+                        {
+                            sum += K[i][k] * H[k][j];
+                        }
+                        mid10[i][j] = sum;
+                    }
+                }
+
+                for (int i = 0; i < D_X; i++)
+                {
+                    for (int j = 0; j < D_X; j++)
+                    {
+                        mid10[i][j] = eye[i][j] - mid10[i][j];
+                    }
+                }
+
+                MultiplyMatrix(mid10, Pexpect, Pfilter);
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Pos[i] = Pos[i] - Xfilter[i + 3];
+                }
+
+                double Delta_pos[UWB_LENGTH][3];
+                for (int i = 0; i < UWB_LENGTH; i++)
+                {
+                    for (int j = 0; j < 3; i++)
+                    {
+                        Delta_pos[i][j] = 0;
+                    }
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    Delta_pos[UWB_num][j] = Xfilter[j + 3];
+                }
+
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    V[i] = V[i] - Xfilter[i + 6];
+                }
+
+
+                double Delta_v[UWB_LENGTH][3];
+                for (int i = 0; i < UWB_LENGTH; i++)
+                {
+                    for (int j = 0; j < 3; i++)
+                    {
+                        Delta_v[i][j] = 0;
+                    }
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    Delta_v[UWB_num][j] = Xfilter[j + 6];
+                }
+
+
+
+                Vx = V[0];
+                Vy = V[1];
+                Vz = V[2];
+
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    err_gyr[i] = err_gyr[i] + Xfilter[i + 9];
+                }
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    err_acc[i] = err_acc[i] + Xfilter[i + 12];
+                }
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    temp_err_gyr[i] = Xfilter[i + 9];
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    temp_err_acc[i] = Xfilter[i + 12];
+                }
+
+                double err_gyr_rec[UWB_LENGTH][3];
+                for (int i = 0; i < UWB_LENGTH; i++)
+                {
+                    for (int j = 0; j < 3; i++)
+                    {
+                        err_gyr_rec[i][j] = 0;
+                    }
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    err_gyr_rec[UWB_num][j] = err_gyr[j];
+                }
+
+
+                double err_acc_rec[UWB_LENGTH][3];
+                for (int i = 0; i < UWB_LENGTH; i++)
+                {
+                    for (int j = 0; j < 3; i++)
+                    {
+                        err_acc_rec[i][j] = 0;
+                    }
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    err_acc_rec[UWB_num][j] = err_acc[j];
+                }
+
+
+                double d_yaw, d_pitch, d_roll;
+                d_yaw = Xfilter[2];
+                d_pitch = Xfilter[1];
+                d_roll = Xfilter[0];
+
+
+                double d_Cnb[3][3] = { {cos(d_yaw) * cos(d_pitch), sin(d_yaw) * cos(d_pitch), -sin(d_pitch)},
+                                 {-sin(d_yaw) * cos(d_roll) + cos(d_yaw) * sin(d_pitch) * sin(d_roll), cos(d_yaw) * cos(d_roll) + sin(d_yaw) * sin(d_pitch) * sin(d_roll),cos(d_pitch) * sin(d_roll)},
+                                 {sin(d_yaw) * sin(d_roll) + cos(d_yaw) * sin(d_pitch) * cos(d_roll),-cos(d_yaw) * sin(d_roll) + sin(d_yaw) * sin(d_pitch) * cos(d_roll),cos(d_pitch) * cos(d_roll)}
+                };
+
+
+
+                double mid11[3][3]; //暂存Cnb * d_Cnb的中间结果
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        double sum = 0.0;
+                        for (int k = 0; k < 3; k++)
+                        {
+                            sum += Cnb[i][k] * d_Cnb[k][j];
+                        }
+                        mid11[i][j] = sum;
+                    }
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        Cnb[i][j] = mid11[i][j];
+                    }
+                }
+
+                double transCnb[3][3];
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        transCnb[j][i] = Cnb[i][j];
+                    }
+                }
+
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        Cbn[i][j] = transCnb[i][j];
+                    }
+                }
+
+                UWB_num = UWB_num + 1;
 
             }
 
+            
+            ins_result[count][0] = INS_Time.base[i][0];
+            ins_result[count][1] = Pos[0];
+            ins_result[count][2] = Pos[1];
+            ins_result[count][3] = Pos[2];
+            ins_result[count][4] = V[0];
+            ins_result[count][5] = V[1];
+            ins_result[count][6] = V[2];
+            ins_result[count][7] = roll;
+            ins_result[count][8] = pitch;
+            ins_result[count][9] = yaw;
 
-
+            count = count + 1;
 
             //----------------KF结束---------------------------------------------------
         }
