@@ -45,3 +45,9 @@ double norm(double Q[], int n);//求向量范数
 void MultiplyMatrix(double a[D_X][D_X], double b[D_X][D_X], double c[D_X][D_X]);
 
 void TransposeMatrix(double a[D_X][D_X], double b[D_X][D_X]); //D_X*D_X的矩阵a转置，结果存入矩阵b
+
+int getA(double arcs[D_M][D_M], int n); //按第一行展开求|A|
+
+void getAStart(double arcs[D_M][D_M], int n, double ans[D_M][D_M]); //计算每一行每一列的每个元素所对应的余子式，组成A*
+
+void InverseMatrix(double a[D_M][D_M], double b[D_M][D_M]);//D_M*D_M的矩阵a，求它的逆矩阵并存入矩阵b中
