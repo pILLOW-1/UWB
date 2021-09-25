@@ -1,4 +1,4 @@
-#pragma once
+
 #include <math.h>
 #define IMU_LENGTH 82040//imu文件行数
 #define UWB_LENGTH 1466//uwb文件行数
@@ -31,14 +31,13 @@ typedef struct matrix {
 	int col;      //列数
 }Matrix;
 
-void CreateMatrix(Matrix& m);//创建矩阵
 void CreateMatrix(double** m, int col, int row);
-void DestroyMatrix(Matrix& m);//销毁矩阵
+
 void DestroyMatrix(double** m, int col, int row);
 
 void cross(double m[3], double t[3], double res[3]);
 
-void CopyMatrix(Matrix s, Matrix& t);//复制矩阵
+void CopyMatrix(Matrix s, Matrix* t);//复制矩阵
 
 double norm(double Q[], int n);//求向量范数
 
