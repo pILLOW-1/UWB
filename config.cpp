@@ -121,3 +121,90 @@ void TransposeMatrix(double a[D_X][D_X], double b[D_X][D_X])
 
 	}
 }
+
+int getA(double arcs[D_M][D_M], int n)
+{
+	if (n == 1)
+	{
+		return arcs[0][0];
+	}
+	int ans = 0;
+	double temp[D_M][D_M];
+	int i, j, k;
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < n - 1; j++)
+		{
+			for (k = 0; k < n - 1; k++)
+			{
+				temp[j][k] = arcs[j + 1][(k >= i) ? k + 1 : k];
+
+			}
+		}
+		int t = getA(temp, n - 1);
+		if (i % 2 == 0)
+		{
+			ans += arcs[0][i] * t;
+		}
+		else
+		{
+			ans -= arcs[0][i] * t;
+		}
+	}
+	return ans;
+}
+
+
+void getAStart(double arcs[D_M][D_M], int n, double ans[D_M][D_M])
+{
+	if (n == 1)
+	{
+		ans[0][0] = 1;
+		return;
+	}
+	int i, j, k, t;
+	double temp[D_M][D_M];
+	for (i = 0; i < n; i++)
+	{
+		for (j = 0; j < n; j++)
+		{
+			for (k = 0; k < n - 1; k++)
+			{
+				for (t = 0; t < n - 1; t++)
+				{
+					temp[k][t] = arcs[k >= i ? k + 1 : k][t >= j ? t + 1 : t];
+				}
+			}
+
+
+			ans[i][j] = getA(temp, n - 1);
+			if ((i + j) % 2 == 1)
+			{
+				ans[i][j] = -ans[i][j];
+			}
+		}
+	}
+
+}
+
+
+
+void InverseMatrix(double a[D_M][D_M], double b[D_M][D_M])
+{
+	int k = getA(a, D_M);
+	if (k == 0)
+	{
+		printf("can not transform!\n");
+	}
+	else
+	{
+		getAStart(a, D_M, b);
+		for (int i = 0; i < D_M; i++)
+		{
+			for (int j = 0; j < D_M; j++)
+			{
+				b[i][j] = b[i][j] / k;
+			}
+		}
+	}
+}
