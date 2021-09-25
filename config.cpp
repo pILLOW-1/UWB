@@ -3,29 +3,7 @@
 #include <stdlib.h>
 
 
-void zeros(Matrix& m, int row, int col);//创建全零矩阵
 
-void CreateMatrix(Matrix& m)//创建矩阵
-{
-
-	m.base = (double**)malloc(sizeof(double*) * m.row);
-	if (!m.base)
-	{
-		printf("CreateMatrix failed!");
-		exit(1);
-	}
-	for (int i = 0; i < m.row; i++)
-	{
-		m.base[i] = (double*)malloc(sizeof(double) * m.col);
-		if (!m.base[i])
-		{
-			printf("CreateMatrix failed!");
-			exit(1);
-		}
-	}
-
-
-}
 
 void CreateMatrix(double** m, int col, int row)
 {
@@ -46,12 +24,6 @@ void CreateMatrix(double** m, int col, int row)
 	}
 }
 
-void DestroyMatrix(Matrix& m)//销毁矩阵
-{
-	for (int i = 0; i < m.row; i++)
-		free(m.base[i]);
-	free(m.base);
-}
 
 void DestroyMatrix(double** m, int col, int row)
 {
@@ -71,23 +43,23 @@ void cross(double m[3], double t[3], double res[3])
 }
 
 
-
-void CopyMatrix(Matrix s, Matrix& t)//复制矩阵
+//This function has been changed since pure C code is required, so C++ has been removed.
+void CopyMatrix(Matrix s, Matrix* t)//复制矩阵
 {
 	if (s.base)
 	{
-		t.row = s.row;
-		t.col = s.col;
-		t.base = NULL;
-		CreateMatrix(t);
+		t->row = s.row;
+		t->col = s.col;
+		t->base = NULL;
+		CreateMatrix(t->base,t->col,t->row);
 		for (int i = 0; i < s.row; i++)
 			for (int j = 0; j < s.col; j++)
-				t.base[i][j] = s.base[i][j];
+				t->base[i][j] = s.base[i][j];
 	}
 	else {
-		t.row = s.row;
-		t.col = s.col;
-		t.base = NULL;
+		t->row = s.row;
+		t->col = s.col;
+		t->base = NULL;
 	}
 }
 
