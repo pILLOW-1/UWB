@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-#include <iostream>
 #include"config.h"
 #include "Cn2b.h"
 #include "find_matched_ins.h"
@@ -58,13 +57,13 @@ int main()
 
 
 
-    CreateMatrix(IMU_info);
-    CreateMatrix(INS_Time);
-    CreateMatrix(Deltavel);
-    CreateMatrix(Deltaang);
-    CreateMatrix(UWB_info);
-    CreateMatrix(UWB_Time);
-    CreateMatrix(UWB_d);
+    CreateMatrix(IMU_info.base,IMU_info.col,IMU_info.row);
+    CreateMatrix(INS_Time.base,INS_Time.col,INS_Time.row);
+    CreateMatrix(Deltavel.base,Deltavel.col,Deltavel.row);
+    CreateMatrix(Deltaang.nase,Deltaang.col,Deltaang.row);
+    CreateMatrix(UWB_info.base,UWB_info.col,UWB_info.row);
+    CreateMatrix(UWB_Time.base,UWB_Time.col,UWB_Time.row);
+    CreateMatrix(UWB_d.base,UWB_d.col,UWB_d.row);
 
 
     RAWIMU_IN = fopen("imu.txt", "r");//imu文件
@@ -781,13 +780,13 @@ int main()
         }
     }
 
-    DestroyMatrix(IMU_info);
-    DestroyMatrix(INS_Time);
-    DestroyMatrix(UWB_Time);
-    DestroyMatrix(UWB_info);
-    DestroyMatrix(UWB_d);
-    DestroyMatrix(Deltaang);
-    DestroyMatrix(Deltavel);
+    DestroyMatrix(IMU_info.base,IMU_info.col,IMU_info.row);
+    DestroyMatrix(INS_Time.base,INS_Time.col,INS_Time.row);
+    DestroyMatrix(UWB_Time.base,UWB_Time.col,UWB_Time.row);
+    DestroyMatrix(UWB_info.base,UWB_info.col,UWB_info.row);
+    DestroyMatrix(UWB_d.base,UWB_d.col,UWB_d.row);
+    DestroyMatrix(Deltaang.base,Deltaang.col,Deltaang.row);
+    DestroyMatrix(Deltavel.base,Deltavel.col,Deltavel.row);
 
     return 0;
 }
