@@ -1,3 +1,5 @@
+#ifndef _CONFIG_H
+#define _CONFIG_H
 
 #include <math.h>
 #define IMU_LENGTH 82040//imu文件行数
@@ -15,6 +17,8 @@
 #define D_X 15//状态向量大小
 #define D_M 4//观测向量大小
 
+typedef double** DD;
+
 extern double  d2r;
 extern double dh2rs;
 extern double acc_sf;//加速度比例因子
@@ -31,9 +35,9 @@ typedef struct matrix {
 	int col;      //列数
 }Matrix;
 
-void CreateMatrix(double** m, int col, int row);
+void CreateMatrix(DD* m, int col, int row);
 
-void DestroyMatrix(double** m, int col, int row);
+void DestroyMatrix(DD* m, int col, int row);
 
 void cross(double m[3], double t[3], double res[3]);
 
@@ -51,3 +55,5 @@ int getA(double arcs[D_M][D_M], int n); //按第一行展开求|A|
 void getAStart(double arcs[D_M][D_M], int n, double ans[D_M][D_M]); //计算每一行每一列的每个元素所对应的余子式，组成A*
 
 void InverseMatrix(double a[D_M][D_M], double b[D_M][D_M]);//D_M*D_M的矩阵a，求它的逆矩阵并存入矩阵b中
+
+#endif

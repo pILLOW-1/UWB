@@ -5,18 +5,18 @@
 
 
 
-void CreateMatrix(double** m, int col, int row)
+void CreateMatrix(DD* m, int col, int row)
 {
-	m = (double**)malloc(sizeof(double*) * row);
-	if (!m)
+	*m = (double**)malloc(sizeof(double*) * row);
+	if (!*m)
 	{
 		printf("CreateMatrix failed!");
 		exit(1);
 	}
 	for (int i = 0; i < row; i++)
 	{
-		m[i] = (double*)malloc(sizeof(double) * col);
-		if (!m[i])
+		(*m)[i] = (double*)malloc(sizeof(double) * col);
+		if (!(*m)[i])
 		{
 			printf("CreateMatrix failed!");
 			exit(1);
@@ -25,11 +25,11 @@ void CreateMatrix(double** m, int col, int row)
 }
 
 
-void DestroyMatrix(double** m, int col, int row)
+void DestroyMatrix(DD* m, int col, int row)
 {
 	for (int i = 0; i < row; i++)
-		free(m[i]);
-	free(m);
+		free((*m)[i]);
+	free(*m);
 }
 
 
@@ -51,7 +51,7 @@ void CopyMatrix(Matrix s, Matrix* t)//复制矩阵
 		t->row = s.row;
 		t->col = s.col;
 		t->base = NULL;
-		CreateMatrix(t->base,t->col,t->row);
+		CreateMatrix(&(t->base),t->col,t->row);
 		for (int i = 0; i < s.row; i++)
 			for (int j = 0; j < s.col; j++)
 				t->base[i][j] = s.base[i][j];
@@ -128,7 +128,7 @@ int getA(double arcs[D_M][D_M], int n)
 	{
 		return arcs[0][0];
 	}
-	int ans = 0;
+	double ans = 0;
 	double temp[D_M][D_M];
 	int i, j, k;
 	for (i = 0; i < n; i++)

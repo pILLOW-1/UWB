@@ -9,7 +9,7 @@ int find_matched_ins(Matrix INS_Time, double current_time)
 	temp_time.base = NULL;
 	temp_time.row = INS_Time.row;
 	temp_time.col = INS_Time.col;
-	CreateMatrix(temp_time.base,temp_time.col,temp_time.row);
+	CreateMatrix(&(temp_time.base),temp_time.col,temp_time.row);
 	for (int i = 0; i < INS_Time.row; i++)
 	{
 		temp_time.base[i][0] = fabs(INS_Time.base[i][0] - current_time);
@@ -31,8 +31,8 @@ int find_matched_ins(Matrix INS_Time, double current_time)
 		for (int i = 0; i < INS_Time.row; i++)
 			if (temp_time.base[i][0] < temp_time.base[index_LF][0])
 				index_LF = i;
-		DestroyMatrix(temp_imu_sec.base,temp_imu_sec.col,temp_imu_sec.row);
+		DestroyMatrix(&(temp_imu_sec.base),temp_imu_sec.col,temp_imu_sec.row);
 	}
-	DestroyMatrix(temp_time.base,temp_time.col,temp_time.row);
+	DestroyMatrix(&(temp_time.base),temp_time.col,temp_time.row);
 	return index_LF;
 }
