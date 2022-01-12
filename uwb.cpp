@@ -397,9 +397,23 @@ int main()
                                        {TurnVector[2], TurnVector[1], -TurnVector[0], 0}
             };
             double QuaternionMatrix[4][4];
+            //----------------------修改点2(2022.1.12)-------------------
+            //修改原因:QuaternionMatrix建立在单位阵上，之前没注意这一点
+            //eye(4)单位阵
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
-                    QuaternionMatrix[i][j] = (1 - NormSquare / 8.0 + NormSquare * NormSquare / 384.0) + (0.5 - NormSquare / 48.0) * dthetaMatrix[i][j];
+                    if (i == j)
+                        QuaternionMatrix[i][j] = 1;
+                    else
+                        QuaternionMatrix[i][j] = 0;
+
+            for (int i = 0; i < 4; i++)
+                QuaternionMatrix[i][i] *= (1 - NormSquare / 8.0 + NormSquare * NormSquare / 384.0);
+
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    QuaternionMatrix[i][j] += (0.5 - NormSquare / 48.0) * dthetaMatrix[i][j];
+            //----------------------修改点2结束-----------------------------
             double Q_update[4];
             for (int i = 0; i < 4; i++)
             {
