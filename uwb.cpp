@@ -70,7 +70,7 @@ int main()
 
 
     RAWIMU_IN = fopen("imu.txt", "r");//imu文件
-    UWB = fopen("uwb.txt", "r");      //uwb文件
+    UWB = fopen("uwb2.txt", "r");      //uwb文件
     //-------imu文件读取--------------------
     fseek(RAWIMU_IN, sizeof(int), SEEK_CUR);
     for (int i = 0; i < IMU_LENGTH; i++)//读取imu文件
@@ -87,12 +87,16 @@ int main()
     for (int i = 0; i < UWB_LENGTH; i++)
     {
         fscanf(UWB, "%lf", &UWB_info.base[i][0]);
-        fseek(UWB, 3 * sizeof(int) + 2 * sizeof(double), SEEK_CUR);
         for (int j = 1; j <= 7; j++)
+        {
             fscanf(UWB, "%lf", &UWB_info.base[i][j]);
+        }
+        //fseek(UWB, sizeof("\n"), SEEK_CUR);//每一行后面有一个回车，需要跳过
     }
     fclose(UWB);
     //-------uwb文件读取结束-----------------
+    for (int i = 0; i < 100; i++)
+        printf("%f  %f  %f  %f  %f  %f  %f \n", IMU_info.base[i][0], IMU_info.base[i][1], IMU_info.base[i][2], IMU_info.base[i][3], IMU_info.base[i][4], IMU_info.base[i][5], IMU_info.base[i][6]);
 
     for (int i = 0; i < IMU_LENGTH; i++)
     {
@@ -583,21 +587,12 @@ int main()
             }
 
 
-            int maxlen;
             int index_UWB;
-            if (UWB_Time.row > UWB_Time.col)
-            {
-                maxlen = UWB_Time.row;
-            }
-            else
-            {
-                maxlen = UWB_Time.col;
-            }
 
-            if (UWB_num < maxlen)
+            if (UWB_num < UWB_LENGTH)
             {
-                index_UWB = find_matched_ins(INS_Time, UWB_Time.base[UWB_num][0]);
-                
+                index_UWB = find_matched_ins(INS_Time, UWB_Time.base[UWB_num - 1][0]);//这里减一是因为matlab下标从1开始
+                                                                                      //C的下标从0开始
             }
 
             int UWB_feedback;
@@ -606,13 +601,14 @@ int main()
             
             if (i == index_UWB && UWB_feedback == 1)
             {
-
-                double transG[D_X][6];
-                for (int i = 0; i < D_X; i++)
+                //更改点(2022.1.12)
+                //更改原因:transG为G的转置，行列维度要互换，之前没变
+                double transG[6][D_X];
+                for (int i = 0; i < 6; i++)
                 {
-                    for (int j = 0; j < 6; j++)
+                    for (int j = 0; j < D_X; j++)
                     {
-                        transG[j][i] = G[i][j];
+                        transG[i][j] = G[j][i];
                     }
                 }
 
@@ -646,7 +642,7 @@ int main()
 
                 double M2[D_X][D_X], M3[D_X][D_X], M4[D_X][D_X],
                     M5[D_X][D_X], M6[D_X][D_X], M7[D_X][D_X], M8[D_X][D_X], M9[D_X][D_X], M10[D_X][D_X];
-                double mid1[D_X][D_X], mid2[D_X][D_X];  //存放中间结果
+                double mid1[D_X][D_X], mid2[D_X][D_X];  //存放中间结果,mid1存放F*Mi,mid2存放Mi'*F'
                 double transF[D_X][D_X];
                 double transMs[D_X][D_X];  //存放M1-M9的转置结果
                 MultiplyMatrix(F, M1, mid1);
@@ -766,7 +762,9 @@ int main()
                 double UWB_dis[4];
                 for (int i = 0; i < 4; i++)
                 {
-                    UWB_dis[i] = UWB_d.base[UWB_num][i];
+                    //更改点(2022.1.12)
+                    //更改原因:下标问题，UWB_num要减1
+                    UWB_dis[i] = UWB_d.base[UWB_num - 1][i];
                 }
 
                 double INS_dis[4];
@@ -905,7 +903,7 @@ int main()
                         mid7[i][j] = mid7[i][j] + R[i][j];
                     }
                 }
-
+                //------------矩阵求逆，不确定是否正确------------------
                 InverseMatrix(mid7, inv);
 
                 for (int i = 0; i < D_X; i++)
@@ -960,11 +958,6 @@ int main()
                     cout << Xfilter[i] << " ";
                 cout << endl;
                 //----------------调试点结束----------------------------------------
-
-                for (int i = 0; i < D_M; i++)
-                {
-                    printf("%lf ", mid8[i]);
-                }
 
 
                 double eye[D_X][D_X];
@@ -1029,7 +1022,7 @@ int main()
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    Delta_pos.base[UWB_num][j] = Xfilter[j + 3];
+                    Delta_pos.base[UWB_num - 1][j] = Xfilter[j + 3];
                 }
 
 
@@ -1055,7 +1048,7 @@ int main()
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    Delta_v.base[UWB_num][j] = Xfilter[j + 6];
+                    Delta_v.base[UWB_num - 1][j] = Xfilter[j + 6];
                 }
 
 
@@ -1102,7 +1095,7 @@ int main()
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    err_gyr_rec.base[UWB_num][j] = err_gyr[j];
+                    err_gyr_rec.base[UWB_num - 1][j] = err_gyr[j];
                 }
 
 
@@ -1120,7 +1113,7 @@ int main()
                 }
                 for (int j = 0; j < 3; j++)
                 {
-                    err_acc_rec.base[UWB_num][j] = err_acc[j];
+                    err_acc_rec.base[UWB_num - 1][j] = err_acc[j];
                 }
 
 
@@ -1159,20 +1152,11 @@ int main()
                     }
                 }
 
-                double transCnb[3][3];
                 for (int i = 0; i < 3; i++)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        transCnb[j][i] = Cnb[i][j];
-                    }
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        Cbn[i][j] = transCnb[i][j];
+                        Cbn[i][j] = Cnb[j][i];
                     }
                 }
 
