@@ -922,6 +922,13 @@ int main()
                 Mat inter1;
                 Mat inter2;
                 MatCreate(&inter1, D_M, D_M);
+
+                for (int i = 0; i < D_M; i++) {
+                    for (int j = 0; j < D_M; j++) {
+                        inter1.element[i][j] = mid7[i][j];
+                    }
+                }
+
                 MatInv1(&inter1, &inter2);
                 
                 for (int i = 0; i < D_M; i++) {
