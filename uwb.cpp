@@ -60,13 +60,13 @@ int main()
 
 
 
-    CreateMatrix(&(IMU_info.base),IMU_info.col,IMU_info.row);
-    CreateMatrix(&(INS_Time.base),INS_Time.col,INS_Time.row);
-    CreateMatrix(&(Deltavel.base),Deltavel.col,Deltavel.row);
-    CreateMatrix(&(Deltaang.base),Deltaang.col,Deltaang.row);
-    CreateMatrix(&(UWB_info.base),UWB_info.col,UWB_info.row);
-    CreateMatrix(&(UWB_Time.base),UWB_Time.col,UWB_Time.row);
-    CreateMatrix(&(UWB_d.base),UWB_d.col,UWB_d.row);
+    CreateMatrix(&(IMU_info.base), IMU_info.col, IMU_info.row);
+    CreateMatrix(&(INS_Time.base), INS_Time.col, INS_Time.row);
+    CreateMatrix(&(Deltavel.base), Deltavel.col, Deltavel.row);
+    CreateMatrix(&(Deltaang.base), Deltaang.col, Deltaang.row);
+    CreateMatrix(&(UWB_info.base), UWB_info.col, UWB_info.row);
+    CreateMatrix(&(UWB_Time.base), UWB_Time.col, UWB_Time.row);
+    CreateMatrix(&(UWB_d.base), UWB_d.col, UWB_d.row);
 
 
     RAWIMU_IN = fopen("imu.txt", "r");//imu文件
@@ -135,7 +135,7 @@ int main()
 
 
     //---------姿态初始化---------
-    double Cnb[3][3], Q[4],Cbn[3][3];
+    double Cnb[3][3], Q[4], Cbn[3][3];
 
     Cn2b(yaw, pitch, roll, Cnb, Q);
     //初始化Cbn
@@ -206,7 +206,7 @@ int main()
             }
         }
     }
-        
+
 
     double G[D_X][6];
     for (int i = 0; i < D_X; i++)
@@ -265,7 +265,7 @@ int main()
     ins_result.col = 10;
     CreateMatrix(&(ins_result.base), ins_result.col, ins_result.row);
 
-//----------------------------------大循环开始---------------------------------------------------------------------------------------------------------
+    //----------------------------------大循环开始---------------------------------------------------------------------------------------------------------
     for (int i = 0; i < IMU_LENGTH; i++)
     {
         if (i % 2 == 0)
@@ -299,7 +299,7 @@ int main()
                 vel_scull_b[i] = velocity[i] + 0.5 * tmp1[i] + 2.0 / 3.0 * (tmp2[i] + tmp3[i]);
 
             //-----------------调试点1-----------------------------------------------------------------------------------
-            printf("%d  vel_scrull\n",i);
+            printf("%d  vel_scrull\n", i);
 
             cout << vel_scull_b[0] << "\t" << vel_scull_b[1] << "\t" << vel_scull_b[2] << endl;
             //---------------调试点1结束---------------------------------------------------------------------------------------
@@ -334,13 +334,13 @@ int main()
             //---------速度更新---------------
 
             //-----------------调试点2-----------------------------------------------------------------------------------
-            
-            printf("%d: before upgrade V\n",i);
+
+            printf("%d: before upgrade V\n", i);
             printf("%f\t%f\t%f\n", Vx, Vy, Vz);
             //---------------调试点2结束---------------------------------------------------------------------------------------
 
             //---------------查看Cnb、Q-------------------------------------------------------------------------------------------
-            cout << i << "   " << "Cnb" <<" before upgrade" << endl;
+            cout << i << "   " << "Cnb" << " before upgrade" << endl;
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -349,7 +349,7 @@ int main()
                 }
                 cout << endl;
             }
-            cout  << i << "    " << "Q" << " before upgrade" << endl;
+            cout << i << "    " << "Q" << " before upgrade" << endl;
             for (int i = 0; i < 4; i++)
                 cout << Q[i] << " ";
             cout << endl;
@@ -368,7 +368,7 @@ int main()
             Vz = V[2];
 
             //-----------------调试点3-----------------------------------------------------------------------------------
-            printf("%d after upgrade V\n",i);
+            printf("%d after upgrade V\n", i);
             printf("%f\t%f\t%f\n", Vx, Vy, Vz);
             //---------------调试点3结束---------------------------------------------------------------------------------------
 
@@ -462,11 +462,11 @@ int main()
             yaw = atan2(Cnb[0][1], Cnb[0][0]) * r2d;
             pitch = asin(-Cnb[0][2]) * r2d;
             roll = atan2(Cnb[1][2], Cnb[2][2]) * r2d;
-           // ----------------姿态更新结束-----------------------------------------------
-           // ----------------imu_update结束-------------------------------------------
+            // ----------------姿态更新结束-----------------------------------------------
+            // ----------------imu_update结束-------------------------------------------
 
-           // ----------------KF开始---------------------------------------------------
-            
+            // ----------------KF开始---------------------------------------------------
+
             double fned[3];
             for (int i = 0; i < 3; i++)
             {
@@ -495,7 +495,7 @@ int main()
                     F[i][j] = -Cbn[i][j - 9];
                 }
             }
-            
+
             F[3][6] = 1;
             F[3][7] = 0;
             F[3][8] = 0;
@@ -547,7 +547,7 @@ int main()
 
             double phi_5_1[D_X][D_X];
             double matrix_multiple[D_X][D_X]; //存放中间结果
-            
+
             MultiplyMatrix(F, F, matrix_multiple);
 
             for (int i = 0; i < D_X; i++)
@@ -598,7 +598,8 @@ int main()
             int UWB_feedback;
             UWB_feedback = 1;
             cout << "i  " << i << "  index_UWB  " << index_UWB << endl;
-            
+            cout << "i " << i << " UWB_num " << UWB_num << endl;
+
             if (i == index_UWB && UWB_feedback == 1)
             {
                 //更改点(2022.1.12)
@@ -804,7 +805,7 @@ int main()
                 {
                     Xfilter[i] = 0;
                 }
-                    
+
                 double Xexpect[D_X];
                 for (int i = 0; i < D_X; i++)
                 {
@@ -842,9 +843,10 @@ int main()
                 double mid5[D_X][D_M];
                 double mid6[D_M][D_X];
                 double mid7[D_M][D_M];
-                double transH[D_X][D_M];  
+                double transH[D_X][D_M];
                 double inv[D_M][D_M];
                 double K[D_X][D_M];
+
                 for (int i = 0; i < D_M; i++)
                 {
                     for (int j = 0; j < D_X; j++)
@@ -904,7 +906,44 @@ int main()
                     }
                 }
                 //------------矩阵求逆，不确定是否正确------------------
-                InverseMatrix(mid7, inv);
+
+                //------------矩阵求逆：调试----------------------------
+
+                printf("求逆前：\n");
+                //double mid7[D_M][D_M];
+                for (int i = 0; i < D_M; i++) {
+                    for (int j = 0; j < D_M; j++) {
+                        printf("%ld ", mid7[i][j]);
+                    }
+                    printf("\n");
+                }
+
+                //InverseMatrix(mid7, inv);
+                Mat inter1;
+                Mat inter2;
+                MatCreate(&inter1, D_M, D_M);
+                MatInv1(&inter1, &inter2);
+                
+                for (int i = 0; i < D_M; i++) {
+                    for (int j = 0; j < D_M; j++) {
+                        inv[i][j] = inter2.element[i][j];
+                    }
+                }
+
+
+                printf("求逆后：\n");
+                //double inv[D_M][D_M];
+                for (int i = 0; i < D_M; i++) {
+                    for (int j = 0; j < D_M; j++) {
+                        printf("%ld ", inv[i][j]);
+                    }
+                    printf("\n");
+                }
+
+
+
+                //------------矩阵求逆：调试结束------------------------
+
 
                 for (int i = 0; i < D_X; i++)
                 {
@@ -929,14 +968,23 @@ int main()
                     {
                         sum += H[i][k] * Xexpect[k];
                     }
-                    mid8[i] = sum;                 
+                    mid8[i] = sum;
                 }
 
                 for (int i = 0; i < D_M; i++)
                 {
                     mid8[i] = Y[i] - mid8[i];
                 }
-                
+
+
+                //------------------调试点：此处mid8就是Y - H * Xexpect---------------
+                printf("%d Y - H * Xexpect\n", i);
+                for (int i = 0; i < D_M; i++) {
+                    printf("%ld ", mid8[i]);
+                }
+                cout << endl;
+                //------------------调试点结束----------------------------------------
+
                 for (int i = 0; i < D_X; i++)
                 {
                     double sum = 0.0;
@@ -953,7 +1001,7 @@ int main()
                 }
 
                 //-----------------Xfilter最后一次更新调试点--------------------------------------------
-                printf("%d Xfilter\n",i);
+                printf("%d Xfilter\n", i);
                 for (int i = 0; i < D_X; i++)
                     cout << Xfilter[i] << " ";
                 cout << endl;
@@ -1167,7 +1215,7 @@ int main()
                 DestroyMatrix(&(err_acc_rec.base), err_acc_rec.col, err_acc_rec.row);
             }
 
-            
+
             ins_result.base[count][0] = INS_Time.base[i][0];
             ins_result.base[count][1] = Pos[0];
             ins_result.base[count][2] = Pos[1];
@@ -1184,19 +1232,19 @@ int main()
                 ins_result.base[count][3], ins_result.base[count][4], ins_result.base[count][5], ins_result.base[count][6],
                 ins_result.base[count][7], ins_result.base[count][8], ins_result.base[count][9]);
             count = count + 1;
-            
+
             //----------------KF结束---------------------------------------------------
 
         }
     }
 
-    DestroyMatrix(&(IMU_info.base),IMU_info.col,IMU_info.row);
-    DestroyMatrix(&(INS_Time.base),INS_Time.col,INS_Time.row);
-    DestroyMatrix(&(UWB_Time.base),UWB_Time.col,UWB_Time.row);
-    DestroyMatrix(&(UWB_info.base),UWB_info.col,UWB_info.row);
-    DestroyMatrix(&(UWB_d.base),UWB_d.col,UWB_d.row);
-    DestroyMatrix(&(Deltaang.base),Deltaang.col,Deltaang.row);
-    DestroyMatrix(&(Deltavel.base),Deltavel.col,Deltavel.row);
+    DestroyMatrix(&(IMU_info.base), IMU_info.col, IMU_info.row);
+    DestroyMatrix(&(INS_Time.base), INS_Time.col, INS_Time.row);
+    DestroyMatrix(&(UWB_Time.base), UWB_Time.col, UWB_Time.row);
+    DestroyMatrix(&(UWB_info.base), UWB_info.col, UWB_info.row);
+    DestroyMatrix(&(UWB_d.base), UWB_d.col, UWB_d.row);
+    DestroyMatrix(&(Deltaang.base), Deltaang.col, Deltaang.row);
+    DestroyMatrix(&(Deltavel.base), Deltavel.col, Deltavel.row);
     DestroyMatrix(&(ins_result.base), ins_result.col, ins_result.row);
 
     return 0;
