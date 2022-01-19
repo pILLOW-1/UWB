@@ -35,6 +35,14 @@ typedef struct matrix {
 	int col;      //列数
 }Matrix;
 
+typedef struct {
+	int row;
+	int col;
+	double** element;
+	unsigned char init;
+}Mat;  //专用于矩阵求逆
+
+
 void CreateMatrix(DD* m, int col, int row);
 
 void DestroyMatrix(DD* m, int col, int row);
@@ -50,10 +58,26 @@ void MultiplyMatrix(double a[D_X][D_X], double b[D_X][D_X], double c[D_X][D_X]);
 
 void TransposeMatrix(double a[D_X][D_X], double b[D_X][D_X]); //D_X*D_X的矩阵a转置，结果存入矩阵b
 
-int getA(double arcs[D_M][D_M], int n); //按第一行展开求|A|
+//int getA(double arcs[D_M][D_M], int n); //按第一行展开求|A|
 
-void getAStart(double arcs[D_M][D_M], int n, double ans[D_M][D_M]); //计算每一行每一列的每个元素所对应的余子式，组成A*
+//void getAStart(double arcs[D_M][D_M], int n, double ans[D_M][D_M]); //计算每一行每一列的每个元素所对应的余子式，组成A*
 
-void InverseMatrix(double a[D_M][D_M], double b[D_M][D_M]);//D_M*D_M的矩阵a，求它的逆矩阵并存入矩阵b中
+//void InverseMatrix(double a[D_M][D_M], double b[D_M][D_M]);//D_M*D_M的矩阵a，求它的逆矩阵并存入矩阵b中
+
+//以下为库中求逆的函数
+
+Mat* MatCreate(Mat* mat, int row, int col);
+
+void MatDelete(Mat* mat);
+
+Mat* MatEye(Mat* mat, int n);
+
+Mat* MatSwapRow(Mat* src, int r1, int r2);
+
+Mat* MatScaleRow(Mat* dst, int r, double scalar);
+
+Mat* MatShearRow(Mat* src, int r1, int r2, double scalar);
+
+Mat* MatInv1(Mat* src, Mat* dst);
 
 #endif
